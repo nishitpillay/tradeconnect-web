@@ -97,9 +97,10 @@ class APIClient {
 
   private normalizeError(error: AxiosError): APIError {
     if (error.response) {
+      const data = error.response.data as any;
       return {
-        message: (error.response.data as any)?.message || 'An error occurred',
-        code: (error.response.data as any)?.code,
+        message: data?.error?.message || data?.message || 'An error occurred',
+        code: data?.error?.code || data?.code,
         statusCode: error.response.status,
       };
     }
