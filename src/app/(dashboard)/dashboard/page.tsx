@@ -13,10 +13,16 @@ import { formatDistanceToNow } from 'date-fns';
 export default function DashboardPage() {
   const { user } = useAuthStore();
 
-  const { data: jobs, isLoading: jobsLoading } = useQuery({
+  const { data: myJobsData, isLoading: jobsLoading } = useQuery({
     queryKey: ['myJobs'],
-    queryFn: () => (user?.role === 'customer' ? jobsAPI.getMyJobs() : jobsAPI.getRecommendedJobs()),
-    enabled: !!user,
+    queryFn: () => jobsAPI.getMyJobs(),
+    enabled: !!user && user.role === 'customer',
+  });
+
+  const { data: feedData, isLoading: feedLoading } = useQuery({
+    queryKey: ['jobFeed'],
+    queryFn: () => jobsAPI.getFeed({ limit: 5 }),
+    enabled: !!user && user.role === 'provider',
   });
 
   const { data: quotes, isLoading: quotesLoading } = useQuery({
@@ -25,13 +31,18 @@ export default function DashboardPage() {
     enabled: user?.role === 'provider',
   });
 
-  if (jobsLoading) {
+  const isLoading = jobsLoading || feedLoading;
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
+
+  const myJobs = myJobsData?.jobs ?? [];
+  const feedJobs = feedData?.jobs ?? [];
 
   return (
     <div className="space-y-8">
@@ -56,9 +67,9 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {jobs && jobs.length > 0 ? (
+          {myJobs.length > 0 ? (
             <div className="grid gap-4">
-              {jobs.slice(0, 5).map((job) => (
+              {myJobs.slice(0, 5).map((job) => (
                 <Link key={job.id} href={`/jobs/${job.id}`}>
                   <Card hover padding="lg">
                     <div className="flex justify-between items-start">
@@ -142,11 +153,11 @@ export default function DashboardPage() {
 
           <div>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Recommended Jobs
+              Available Jobs
             </h2>
-            {jobs && jobs.length > 0 ? (
+            {feedJobs.length > 0 ? (
               <div className="grid gap-4">
-                {jobs.slice(0, 5).map((job) => (
+                {feedJobs.map((job) => (
                   <Link key={job.id} href={`/jobs/${job.id}`}>
                     <Card hover padding="lg">
                       <div className="flex justify-between items-start">
@@ -176,7 +187,7 @@ export default function DashboardPage() {
             ) : (
               <Card padding="lg">
                 <div className="text-center py-12">
-                  <p className="text-gray-600">No recommended jobs at the moment</p>
+                  <p className="text-gray-600">No jobs available in your area right now</p>
                 </div>
               </Card>
             )}

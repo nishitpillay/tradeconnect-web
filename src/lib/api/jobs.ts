@@ -1,12 +1,12 @@
 import { apiClient } from './client';
-import { Job, PaginatedResponse } from '@/types';
+import { Job } from '@/types';
 import { CreateJobInput } from '@/schemas/job.schema';
 
 export const jobsAPI = {
   // Customer endpoints
-  async getMyJobs(status?: string): Promise<Job[]> {
+  async getMyJobs(status?: string): Promise<{ jobs: Job[]; nextCursor: string | null }> {
     const params = status ? { status } : {};
-    return apiClient.get<Job[]>('/jobs/my-jobs', { params });
+    return apiClient.get<{ jobs: Job[]; nextCursor: string | null }>('/jobs', { params });
   },
 
   async createJob(data: CreateJobInput): Promise<Job> {
@@ -44,11 +44,8 @@ export const jobsAPI = {
     category?: string;
     budget_range?: string;
     urgency?: string;
-  }): Promise<PaginatedResponse<Job>> {
-    return apiClient.get<PaginatedResponse<Job>>('/jobs/feed', { params });
+  }): Promise<{ jobs: Job[]; nextCursor: string | null }> {
+    return apiClient.get<{ jobs: Job[]; nextCursor: string | null }>('/jobs/feed', { params });
   },
 
-  async getRecommendedJobs(): Promise<Job[]> {
-    return apiClient.get<Job[]>('/jobs/recommended');
-  },
 };
