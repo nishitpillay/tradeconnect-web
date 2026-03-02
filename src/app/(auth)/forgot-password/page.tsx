@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { z } from 'zod';
+import { authAPI } from '@/lib/api/auth';
 
 const ForgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -40,12 +41,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement forgot password API call
-      // await authAPI.forgotPassword({ email });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      await authAPI.forgotPassword(email);
       setSuccess(true);
       setEmail('');
     } catch (error: any) {

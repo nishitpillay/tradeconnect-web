@@ -22,49 +22,67 @@ export interface AuthResponse {
 }
 
 // Job types
-export type JobStatus = 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled';
-export type BudgetRange = '$200-$500' | '$500-$1000' | '$1000-$2000' | '$2000+';
-export type Urgency = 'flexible' | 'within_week' | 'within_days' | 'urgent';
+export type JobStatus =
+  | 'draft' | 'posted' | 'quoting' | 'awarded'
+  | 'in_progress' | 'completed' | 'cancelled' | 'expired';
+
+export type Urgency = 'emergency' | 'within_48h' | 'this_week' | 'this_month' | 'flexible';
 
 export interface Job {
   id: string;
   customer_id: string;
+  category_id: string;
   title: string;
   description: string;
-  category: string;
   status: JobStatus;
-  budget_range: BudgetRange;
   urgency: Urgency;
-  preferred_date: string | null;
-  exact_address: string;
-  approximate_address: string;
-  location: {
-    type: 'Point';
-    coordinates: [number, number]; // [lng, lat]
-  };
-  images: string[];
+  suburb: string;
+  postcode: string;
+  state: string;
+  approximate_address?: string;
+  exact_address?: string;
+  budget_min: number | null;
+  budget_max: number | null;
+  budget_is_gst: boolean;
+  preferred_start_date: string | null;
   awarded_provider_id: string | null;
+  awarded_quote_id: string | null;
+  quote_count: number;
+  published_at: string | null;
+  expires_at: string | null;
+  completed_at: string | null;
+  cancelled_at: string | null;
   created_at: string;
   updated_at: string;
   customer?: User;
-  quotes_count?: number;
+  category?: { id: string; name: string; slug: string; icon: string };
 }
 
 // Quote types
-export type QuoteStatus = 'pending' | 'accepted' | 'rejected';
-export type QuoteType = 'fixed' | 'hourly' | 'quote_range';
+export type QuoteStatus = 'pending' | 'viewed' | 'shortlisted' | 'awarded' | 'rejected' | 'withdrawn' | 'expired';
+export type QuoteType = 'fixed' | 'estimate_range' | 'hourly' | 'call_for_quote';
 
 export interface Quote {
   id: string;
   job_id: string;
   provider_id: string;
-  quote_type: QuoteType;
-  amount: number;
-  hourly_rate?: number;
-  estimated_hours?: number;
-  estimated_days: number;
-  notes: string;
   status: QuoteStatus;
+  quote_type: QuoteType;
+  price_fixed: number | null;
+  price_min: number | null;
+  price_max: number | null;
+  hourly_rate: number | null;
+  is_gst_included: boolean;
+  scope_notes: string | null;
+  inclusions: string | null;
+  exclusions: string | null;
+  timeline_days: number | null;
+  warranty_months: number | null;
+  viewed_at: string | null;
+  shortlisted_at: string | null;
+  awarded_at: string | null;
+  rejected_at: string | null;
+  withdrawn_at: string | null;
   created_at: string;
   updated_at: string;
   provider?: User;
@@ -92,87 +110,62 @@ export interface Message {
   id: string;
   conversation_id: string;
   sender_id: string;
-  content: string;
-  read_at: string | null;
+  body: string | null;
+  message_type: 'text' | 'image' | 'system' | 'quote_event';
+  is_deleted: boolean;
+  read_by_recipient_at: string | null;
   created_at: string;
   sender?: User;
-}
-
-// Pagination types
-export interface PaginatedResponse<T> {
-  data: T[];
-  next_cursor: string | null;
-  has_more: boolean;
 }
 
 // Profile types
 export interface CustomerProfile {
   user_id: string;
+  suburb: string | null;
+  state: string | null;
+  postcode: string | null;
   jobs_posted: number;
-  jobs_completed: number;
-  average_rating: number | null;
-  total_reviews: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ProviderProfile {
   user_id: string;
   business_name: string | null;
   abn: string | null;
-  trade_categories: string[];
-  years_experience: number | null;
   bio: string | null;
-  verification_status: 'unverified' | 'pending' | 'verified';
+  years_experience: number | null;
+  service_radius_km: number;
+  abn_verified: boolean;
+  identity_verified: boolean;
+  trade_license_verified: boolean;
   insurance_verified: boolean;
-  license_verified: boolean;
-  police_check_verified: boolean;
-  quotes_sent: number;
-  jobs_won: number;
-  jobs_completed: number;
-  average_rating: number | null;
+  avg_rating: number | null;
   total_reviews: number;
+  total_quotes: number;
+  jobs_completed: number;
+  available: boolean;
+  created_at: string;
+  updated_at: string;
+  user?: User;
 }
 
-// API Error
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: string;
+  channel: 'push' | 'email' | 'in_app';
+  title: string;
+  body: string;
+  data: Record<string, unknown> | null;
+  is_read: boolean;
+  read_at: string | null;
+  sent_at: string | null;
+  created_at: string;
+}
+
 export interface APIError {
   message: string;
   code?: string;
   statusCode: number;
-}
-
-// Form inputs (for Zod)
-export interface LoginInput {
-  email: string;
-  password: string;
-}
-
-export interface RegisterInput {
-  email: string;
-  password: string;
-  full_name: string;
-  phone: string;
-  role: UserRole;
-}
-
-export interface CreateJobInput {
-  title: string;
-  description: string;
-  category: string;
-  budget_range: BudgetRange;
-  urgency: Urgency;
-  preferred_date: string | null;
-  exact_address: string;
-  location: {
-    type: 'Point';
-    coordinates: [number, number];
-  };
-}
-
-export interface SubmitQuoteInput {
-  job_id: string;
-  quote_type: QuoteType;
-  amount: number;
-  hourly_rate?: number;
-  estimated_hours?: number;
-  estimated_days: number;
-  notes: string;
 }

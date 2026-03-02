@@ -105,13 +105,8 @@ export default function NewJobPage() {
       if (budgetMax) payload.budget_max = Math.round(Number(budgetMax) * 100);
       if (preferredStartDate) payload.preferred_start_date = preferredStartDate;
 
-      const job = await jobsAPI.createJob(payload as any);
-
-      if (publishNow) {
-        await jobsAPI.publishJob(job.id);
-      }
-
-      router.push('/dashboard');
+      await jobsAPI.createJob(payload as any);
+      router.push(publishNow ? '/jobs' : '/dashboard');
     } catch (err: any) {
       setApiError(err.message || 'Failed to create job. Please try again.');
     } finally {

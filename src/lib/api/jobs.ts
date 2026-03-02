@@ -33,6 +33,10 @@ export const jobsAPI = {
     return apiClient.post<Job>(`/jobs/${id}/cancel`);
   },
 
+  async awardJob(id: string, quoteId: string): Promise<Job> {
+    return apiClient.post<Job>(`/jobs/${id}/award`, { quote_id: quoteId });
+  },
+
   async completeJob(id: string): Promise<Job> {
     return apiClient.post<Job>(`/jobs/${id}/complete`);
   },
@@ -41,9 +45,13 @@ export const jobsAPI = {
   async getFeed(params: {
     cursor?: string;
     limit?: number;
-    category?: string;
-    budget_range?: string;
+    category_id?: string;
+    state?: string;
+    radius_km?: number;
     urgency?: string;
+    budget_min?: number;
+    budget_max?: number;
+    sort?: 'recommended' | 'newest' | 'budget_high' | 'budget_low' | 'distance';
   }): Promise<{ jobs: Job[]; nextCursor: string | null }> {
     return apiClient.get<{ jobs: Job[]; nextCursor: string | null }>('/jobs/feed', { params });
   },

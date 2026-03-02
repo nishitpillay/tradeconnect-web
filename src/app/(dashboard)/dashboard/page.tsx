@@ -84,9 +84,13 @@ export default function DashboardPage() {
                           {job.description}
                         </p>
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>{job.category}</span>
+                          <span>{job.category?.name ?? job.suburb}</span>
                           <span>•</span>
-                          <span>{job.budget_range}</span>
+                          <span>
+                            {job.budget_min && job.budget_max
+                              ? `$${Math.round(job.budget_min / 100).toLocaleString()} – $${Math.round(job.budget_max / 100).toLocaleString()}`
+                              : 'Budget TBD'}
+                          </span>
                           <span>•</span>
                           <span>
                             {formatDistanceToNow(new Date(job.created_at), {
@@ -95,10 +99,10 @@ export default function DashboardPage() {
                           </span>
                         </div>
                       </div>
-                      {job.quotes_count !== undefined && (
+                      {job.quote_count > 0 && (
                         <div className="ml-4 text-right">
                           <div className="text-2xl font-bold text-primary-600">
-                            {job.quotes_count}
+                            {job.quote_count}
                           </div>
                           <div className="text-sm text-gray-500">Quotes</div>
                         </div>
@@ -136,9 +140,9 @@ export default function DashboardPage() {
             <Card padding="lg">
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600">
-                  {quotes?.filter((q) => q.status === 'accepted').length || 0}
+                  {quotes?.filter((q) => q.status === 'awarded').length || 0}
                 </div>
-                <div className="text-gray-600 mt-1">Accepted Quotes</div>
+                <div className="text-gray-600 mt-1">Awarded Quotes</div>
               </div>
             </Card>
             <Card padding="lg">
@@ -169,11 +173,15 @@ export default function DashboardPage() {
                             {job.description}
                           </p>
                           <div className="flex items-center space-x-4 text-sm text-gray-500">
-                            <span>{job.category}</span>
+                            <span>{job.category?.name ?? '—'}</span>
                             <span>•</span>
-                            <span>{job.budget_range}</span>
+                            <span>
+                              {job.budget_min && job.budget_max
+                                ? `$${Math.round(job.budget_min / 100).toLocaleString()} – $${Math.round(job.budget_max / 100).toLocaleString()}`
+                                : 'Budget TBD'}
+                            </span>
                             <span>•</span>
-                            <span>{job.approximate_address}</span>
+                            <span>{job.suburb}, {job.state}</span>
                           </div>
                         </div>
                         <Button variant="outline" size="sm">

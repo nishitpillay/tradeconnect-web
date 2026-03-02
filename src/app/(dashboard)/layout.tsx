@@ -95,9 +95,12 @@ export default function DashboardLayout({
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
+              <Link
+                href="/profile"
+                className="text-sm text-gray-700 hover:text-primary-600 font-medium"
+              >
                 {user.full_name} <span className="text-gray-500">({user.role})</span>
-              </span>
+              </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Logout
               </Button>
