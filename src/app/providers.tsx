@@ -25,8 +25,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Initialize auth on mount
   useEffect(() => {
     async function initializeAuth() {
-      // Skip auth check on login/register pages
-      if (typeof window !== "undefined" && (window.location.pathname.includes("/login") || window.location.pathname.includes("/register"))) {
+      const publicRoutes = new Set(['/', '/login', '/register', '/forgot-password']);
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
+
+      // Public pages should not trigger auth bootstrap redirects.
+      if (publicRoutes.has(pathname)) {
         setLoading(false);
         return;
       }
