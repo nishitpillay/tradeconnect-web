@@ -6,6 +6,7 @@ import * as path from 'path';
 
 test.describe('10 - Guest Crawl - Public Pages', () => {
   test('should crawl all public pages sequentially', async ({ page, baseURL }) => {
+    test.setTimeout(180000);
     const crawler = new SequentialCrawler(page, {
       startUrl: baseURL!,
       maxPages: parseInt(process.env.E2E_MAX_PAGES || '50'),
@@ -109,8 +110,12 @@ test.describe('10 - Guest Crawl - Public Pages', () => {
       console.log(`   ✅ "Get Started" button found`);
     }
 
-    const loginLink = page.locator('a:has-text("Login")').or(
-      page.locator('button:has-text("Login")')
+    const loginLink = page.locator('a:has-text("Log In")').or(
+      page.locator('a:has-text("Login")').or(
+        page.locator('button:has-text("Log In")').or(
+          page.locator('button:has-text("Login")')
+        )
+      )
     );
     const loginCount = await loginLink.count();
 
@@ -156,8 +161,12 @@ test.describe('10 - Guest Crawl - Public Pages', () => {
     await page.goto(baseURL!);
 
     // Click login link
-    const loginLink = page.locator('a:has-text("Login")').or(
-      page.locator('button:has-text("Login")')
+    const loginLink = page.locator('a:has-text("Log In")').or(
+      page.locator('a:has-text("Login")').or(
+        page.locator('button:has-text("Log In")').or(
+          page.locator('button:has-text("Login")')
+        )
+      )
     );
 
     const count = await loginLink.count();

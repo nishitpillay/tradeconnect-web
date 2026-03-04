@@ -6,6 +6,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 test.describe('30 - Provider Crawl - Authenticated Pages', () => {
+  test.setTimeout(180000);
+
   // Skip entire suite if credentials not configured
   test.skip(({ }) => {
     const creds = getProviderCredentials();

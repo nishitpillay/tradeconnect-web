@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
@@ -15,14 +15,18 @@ export default function LoginPage() {
   const router = useRouter();
   const { setUser, setAccessToken, setAuthenticated } = useAuthStore();
 
+  const [isHydrated, setIsHydrated] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("[LOGIN HANDLER] Called!");
     e.preventDefault();
     setErrors({});
     setApiError('');
@@ -46,8 +50,6 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    console.log("[LOGIN] Attempting login for:", formEmail);
-
     try {
       const response = await authAPI.login({ email: formEmail, password: formPassword });
 
@@ -62,7 +64,6 @@ export default function LoginPage() {
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (error: any) {
-      console.error("[LOGIN] Error:", error);
       setApiError(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -76,7 +77,7 @@ export default function LoginPage() {
         <p className="mt-2 text-gray-600">Sign in to your TradeConnect account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {apiError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
             {apiError}
@@ -92,6 +93,7 @@ export default function LoginPage() {
           error={errors.email}
           required
           autoComplete="email"
+          disabled={!isHydrated || isLoading}
         />
 
         <Input
@@ -103,6 +105,7 @@ export default function LoginPage() {
           error={errors.password}
           required
           autoComplete="current-password"
+          disabled={!isHydrated || isLoading}
         />
 
         <div className="flex items-center justify-between">
@@ -116,7 +119,13 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <Button type="submit" fullWidth isLoading={isLoading}>
+        <Button
+          type="submit"
+          fullWidth
+          isLoading={isLoading}
+          disabled={!isHydrated}
+          data-testid="login-submit"
+        >
           Sign In
         </Button>
 

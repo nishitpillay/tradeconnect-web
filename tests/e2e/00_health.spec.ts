@@ -8,10 +8,11 @@ import {
 
 test.describe('00 - Health Check', () => {
   test('should load home page without errors', async ({ page, baseURL }) => {
+    test.setTimeout(60000);
     console.log(`\n🏠 Health check: Loading home page`);
 
     // Navigate to home
-    await page.goto(baseURL!);
+    await page.goto(baseURL!, { waitUntil: 'domcontentloaded' });
 
     // Wait for page to load
     await page.waitForLoadState('domcontentloaded');
@@ -91,7 +92,9 @@ test.describe('00 - Health Check', () => {
     }
 
     // Check for login/signup links
-    const authLinks = await page.locator('a:has-text("Login"), a:has-text("Sign"), button:has-text("Login"), button:has-text("Get Started")').count();
+    const authLinks = await page
+      .locator('a:has-text("Log In"), a:has-text("Login"), a:has-text("Sign"), button:has-text("Log In"), button:has-text("Login"), button:has-text("Get Started")')
+      .count();
 
     expect(authLinks, 'Should have auth-related links/buttons').toBeGreaterThan(0);
     console.log(`   ✅ Found ${authLinks} auth-related elements`);

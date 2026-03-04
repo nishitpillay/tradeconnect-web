@@ -19,19 +19,18 @@ export async function login(
   // Navigate to login page
   await page.goto(`${baseURL}/login`, { waitUntil: 'domcontentloaded' });
 
-  // Wait for login form
+  // Wait for hydrated login form
   await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+  const submitButton = page.getByTestId('login-submit');
+  await submitButton.waitFor({ state: 'visible', timeout: 10000 });
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-testid="login-submit"]') as HTMLButtonElement | null;
+    return !!button && !button.disabled;
+  });
 
   // Fill credentials
   await page.fill('input[type="email"]', credentials.email);
   await page.fill('input[type="password"]', credentials.password);
-
-  // Submit form
-  const submitButton = page.locator('button[type="submit"]').or(
-    page.locator('button:has-text("Sign In")').or(
-      page.locator('button:has-text("Login")')
-    )
-  );
 
   await submitButton.click();
 
