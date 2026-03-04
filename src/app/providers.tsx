@@ -25,7 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Initialize auth on mount
   useEffect(() => {
     async function initializeAuth() {
-      const publicRoutes = new Set(['/', '/login', '/register', '/forgot-password']);
+      const publicRoutes = new Set(['/', '/login', '/register', '/forgot-password', '/pricing', '/user-experiences']);
       const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
 
       // Public pages should not trigger auth bootstrap redirects.

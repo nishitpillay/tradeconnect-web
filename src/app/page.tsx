@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { PublicFooter } from '@/components/marketing/PublicFooter';
+import { PublicNav } from '@/components/marketing/PublicNav';
 import { profilesAPI } from '@/lib/api/profiles';
 import type { CategoryProvider } from '@/types';
 
@@ -206,34 +208,7 @@ export default function HomePage() {
         <div className="absolute left-[-8rem] top-24 -z-10 h-72 w-72 rounded-full bg-sky-300/20 blur-3xl" />
         <div className="absolute right-[-6rem] top-12 -z-10 h-80 w-80 rounded-full bg-cyan-300/20 blur-3xl" />
 
-        <nav className="sticky top-0 z-20 border-b border-white/60 bg-white/75 backdrop-blur-xl">
-          <div className="container">
-            <div className="flex items-center justify-between py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-sm font-semibold text-white">
-                  TC
-                </div>
-                <div>
-                  <div className="text-lg font-semibold tracking-tight">TradeConnect</div>
-                  <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Marketplace OS</div>
-                </div>
-              </div>
-              <div className="hidden items-center gap-6 text-sm text-slate-600 md:flex">
-                <a href="#categories" className="transition hover:text-slate-900">Categories</a>
-                <a href="#how-it-works" className="transition hover:text-slate-900">How it works</a>
-                <a href="#providers" className="transition hover:text-slate-900">Providers</a>
-              </div>
-              <div className="flex items-center gap-3">
-                <Link href="/login">
-                  <Button variant="ghost" className="rounded-full px-5">Log In</Button>
-                </Link>
-                <Link href="/register">
-                  <Button className="rounded-full bg-slate-900 px-5 hover:bg-slate-800">Get Started</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <PublicNav />
 
         <section className="container pt-16 pb-10 md:pt-24">
           <div className="grid items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]">
@@ -628,6 +603,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <PublicFooter />
     </div>
   );
 }
